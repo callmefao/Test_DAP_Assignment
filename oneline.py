@@ -4,11 +4,12 @@ import pandas as pd
 from ultralytics import YOLO
 from vidgear.gears import CamGear
 from tracker import *
+import torch
 
 app = Flask(__name__)
 
-model = YOLO('yolov8s.pt')
-stream = CamGear(source='https://www.youtube.com/watch?v=FsL_KQz4gpw', stream_mode=True, logging=True).start()
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+model = YOLO('yolov8s.pt').to(device)stream = CamGear(source='https://www.youtube.com/watch?v=FsL_KQz4gpw', stream_mode=True, logging=True).start()
 
 # Global variables for car counting
 car_count = 0
