@@ -38,8 +38,6 @@ def gen_frames():
         frame = cv2.resize(frame, (1020, 500))
         results = model.predict(frame)
         a = results[0].boxes.data
-        print(a)
-
         bbox_list = []
 
         for row in a:
