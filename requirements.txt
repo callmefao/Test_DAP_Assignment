@@ -1,0 +1,6 @@
+flask
+opencv-python
+pandas
+ultralytics
+vidgear
+yt_dlp
