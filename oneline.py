@@ -1,15 +1,13 @@
 from flask import Flask, render_template, Response
 import cv2
-import pandas as pd
 from ultralytics import YOLO
 from vidgear.gears import CamGear
 from tracker import *
-import torch
 
 app = Flask(__name__)
 
-device = 'cuda' if torch.cuda.is_available() else 'cpu'
-model = YOLO('yolov8s.pt').to(device)stream = CamGear(source='https://www.youtube.com/watch?v=FsL_KQz4gpw', stream_mode=True, logging=True).start()
+model = YOLO('yolov8s.pt')
+stream = CamGear(source='https://www.youtube.com/watch?v=FsL_KQz4gpw', stream_mode=True, logging=True).start()
 
 # Global variables for car counting
 car_count = 0
@@ -40,18 +38,18 @@ def gen_frames():
         frame = cv2.resize(frame, (1020, 500))
         results = model.predict(frame)
         a = results[0].boxes.data
-        detections_df = pd.DataFrame(a).astype("float")
+        print(a)
 
         bbox_list = []
 
-        for index, row in detections_df.iterrows():
+        for row in a:
+            print(row)
             bbox_x1 = int(row[0])
             bbox_y1 = int(row[1])
             bbox_x2 = int(row[2])
             bbox_y2 = int(row[3])
             d = int(row[5])
             c = class_list[d]
-            print(c)
             if 'car' in c:
                 bbox_list.append([bbox_x1, bbox_y1, bbox_x2, bbox_y2])
 
@@ -92,4 +90,4 @@ def video_feed():
     return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 if __name__ == '__main__':
-    app.run(port=5000, debug=True)
+    app.run(debug=True)
